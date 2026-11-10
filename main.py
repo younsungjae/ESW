@@ -3,10 +3,12 @@ from PIL import Image, ImageDraw
 from config import W, H, STEP, FPS, COLOR_BG, COLOR_TEXT
 from hw import Display, Buttons
 from player import Player
+from arrows import ArrowManager
 
 screen = Display()
 btns = Buttons()
 player = Player()
+arrows = ArrowManager()
 
 img = Image.new("RGB", (W, H))
 d = ImageDraw.Draw(img)
@@ -27,10 +29,12 @@ while True:
     while next_update <= now:
         btns.update()
         player.update(btns)
+        arrows.update(player)
         next_update = next_update + STEP
 
     d.rectangle((0, 0, W, H), fill=COLOR_BG)
     player.draw(d)
+    arrows.draw(d)
 
     frame_count = frame_count + 1
     if now - fps_timer >= 1:
@@ -38,6 +42,7 @@ while True:
         frame_count = 0
         fps_timer = now
     d.text((4, 4), "FPS " + str(fps), fill=COLOR_TEXT)
+    d.text((4, 16), "ARROW " + str(len(arrows.arrows)), fill=COLOR_TEXT)
 
     screen.show(img)
 

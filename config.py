@@ -9,7 +9,14 @@ PLAYER_SPEED = 2.0
 PLAYER_DRAW_R = 7
 PLAYER_HIT_R = 3   # 판정은 그림보다 작게
 
+ARROW_SPEED = 1.5        # 처음 속도
+ARROW_LEN = 8
+ARROW_START_GAP = 40     # 처음엔 40번 계산마다 한 발 (약 0.67초)
+ARROW_MIN_GAP = 6        # 가장 빠를 때 6번마다 한 발 (0.1초)
+MAX_ARROWS = 60
+
 COLOR_BG = (12, 28, 18)
 COLOR_PLAYER = (255, 230, 240)
 COLOR_HITBOX = (255, 60, 90)
+COLOR_ARROW = (255, 220, 120)
 COLOR_TEXT = (200, 255, 200)
