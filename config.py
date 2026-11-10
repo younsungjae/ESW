@@ -1,4 +1,5 @@
-W = 240
+# 화면 가로세로
+W = 240 
 H = 240
 
 LOGIC_HZ = 60
@@ -6,8 +7,8 @@ STEP = 1 / LOGIC_HZ
 FPS = 20
 
 PLAYER_SPEED = 2.0
-PLAYER_DRAW_R = 7
-PLAYER_HIT_R = 3   # 판정은 그림보다 작게
+PLAYER_DRAW_R = 7  # 그림 반지름
+PLAYER_HIT_R = 3   # 판정 반지름, 판정은 그림보다 작게 함
 
 ARROW_SPEED = 1.5        # 처음 속도
 ARROW_LEN = 8
