@@ -1,7 +1,7 @@
 import math
 import random
-from config import (W, H, ARROW_SPEED, ARROW_LEN, ARROW_START_GAP, ARROW_MIN_GAP,
-                    MAX_ARROWS, COLOR_ARROW)
+from config import (W, H, ARROW_SPEED, ARROW_LEN, ARROW_HIT_R, ARROW_START_GAP, ARROW_MIN_GAP,
+                    MAX_ARROWS, PLAYER_HIT_R, COLOR_ARROW)
 
 
 class Arrow:
@@ -76,6 +76,16 @@ class ArrowManager:
             if not a.is_out():
                 alive.append(a)
         self.arrows = alive
+
+    def check_hit(self, player):
+        for a in self.arrows:
+            dx = a.x - player.x
+            dy = a.y - player.y
+            dist = math.sqrt(dx * dx + dy * dy)
+            if dist < PLAYER_HIT_R + ARROW_HIT_R:
+                self.arrows.remove(a)
+                return True
+        return False
 
     def draw(self, d):
         for a in self.arrows:
