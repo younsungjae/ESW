@@ -4,48 +4,44 @@ from config import W, H, STEP, FPS, COLOR_BG, COLOR_TEXT
 from hw import Display, Buttons
 from player import Player
 
+screen = Display()
+btns = Buttons()
+player = Player()
 
-def main():
-    screen = Display()
-    btns = Buttons()
-    player = Player()
+img = Image.new("RGB", (W, H))
+d = ImageDraw.Draw(img)
 
-    img = Image.new("RGB", (W, H))
-    d = ImageDraw.Draw(img)
+next_update = time.monotonic()
+fps = 0
+frame_count = 0
+fps_timer = time.monotonic()
 
-    prev = time.monotonic()
-    acc = 0.0
-    fps = 0.0
-    frames = 0
-    fps_t = prev
+while True:
+    now = time.monotonic()
 
-    while True:
-        now = time.monotonic()
-        acc += now - prev
-        prev = now
-        if acc > 0.25:
-            acc = 0.0
+    # 너무 많이 밀렸으면 따라잡지 않고 지금부터 다시
+    if now - next_update > 0.25:
+        next_update = now
 
-        # 로직은 60Hz 고정
-        while acc >= STEP:
-            btns.update()
-            player.update(btns)
-            acc -= STEP
+    # 게임 계산은 1/60초마다 한 번
+    while next_update <= now:
+        btns.update()
+        player.update(btns)
+        next_update = next_update + STEP
 
-        d.rectangle((0, 0, W, H), fill=COLOR_BG)
-        player.draw(d)
+    d.rectangle((0, 0, W, H), fill=COLOR_BG)
+    player.draw(d)
 
-        frames += 1
-        if now - fps_t >= 1.0:
-            fps = frames / (now - fps_t)
-            frames = 0
-            fps_t = now
-        d.text((4, 4), f"FPS {fps:4.1f}", fill=COLOR_TEXT)
-        screen.show(img)
+    frame_count = frame_count + 1
+    if now - fps_timer >= 1:
+        fps = frame_count
+        frame_count = 0
+        fps_timer = now
+    d.text((4, 4), "FPS " + str(fps), fill=COLOR_TEXT)
 
-        spent = time.monotonic() - now
-        time.sleep(max(0, 1 / FPS - spent))
+    screen.show(img)
 
-
-if __name__ == "__main__":
-    main()
+    # 화면은 1초에 20번만
+    spent = time.monotonic() - now
+    if spent < 1 / FPS:
+        time.sleep(1 / FPS - spent)

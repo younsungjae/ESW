@@ -14,41 +14,48 @@ class Display:
         self.backlight.switch_to_output()
         self.backlight.value = True
 
-        self.disp = st7789.ST7789(
-            board.SPI(), width=W, height=H,
-            rotation=180, y_offset=80,
-            cs=cs, dc=dc, rst=rst,
-            baudrate=24000000,
-        )
+        spi = board.SPI()
+        self.disp = st7789.ST7789(spi, width=W, height=H, rotation=180, y_offset=80,
+                                  cs=cs, dc=dc, rst=rst, baudrate=24000000)
 
     def show(self, img):
         self.disp.image(img)
 
 
-class Buttons:
-    PINS = {
-        "U": board.D17, "D": board.D22,
-        "L": board.D27, "R": board.D23,
-        "C": board.D4,
-        "A": board.D5, "B": board.D6,
-    }
+def make_button(pin):
+    btn = digitalio.DigitalInOut(pin)
+    btn.direction = digitalio.Direction.INPUT
+    btn.pull = digitalio.Pull.UP
+    return btn
 
+
+class Buttons:
     def __init__(self):
-        self.pins = {}
-        for name, pin in self.PINS.items():
-            p = digitalio.DigitalInOut(pin)
-            p.direction = digitalio.Direction.INPUT
-            p.pull = digitalio.Pull.UP
-            self.pins[name] = p
-        self.now = {n: False for n in self.PINS}
-        self.prev = {n: False for n in self.PINS}
+        self.pins = {
+            "U": make_button(board.D17),
+            "D": make_button(board.D22),
+            "L": make_button(board.D27),
+            "R": make_button(board.D23),
+            "C": make_button(board.D4),
+            "A": make_button(board.D5),
+            "B": make_button(board.D6),
+        }
+        self.now = {}
+        self.before = {}
+        for name in self.pins:
+            self.now[name] = False
+            self.before[name] = False
 
     def update(self):
-        self.prev = self.now
-        self.now = {n: not p.value for n, p in self.pins.items()}  # active low
+        for name in self.pins:
+            self.before[name] = self.now[name]
+            # 누르면 LOW(False)가 되니까 반대로 저장
+            self.now[name] = not self.pins[name].value
 
     def held(self, name):
         return self.now[name]
 
     def pressed(self, name):
-        return self.now[name] and not self.prev[name]
+        if self.now[name] and not self.before[name]:
+            return True
+        return False
