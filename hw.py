@@ -3,7 +3,7 @@ import digitalio
 from adafruit_rgb_display import st7789
 from config import W, H
 
-
+# 디스플레이 클래스, 화면 관련
 class Display:
     def __init__(self):
         cs = digitalio.DigitalInOut(board.CE0)
@@ -28,7 +28,7 @@ def make_button(pin):
     btn.pull = digitalio.Pull.UP
     return btn
 
-
+# 버튼 클래스, 버튼 입력 구분(조이스틱, A,B버튼)
 class Buttons:
     def __init__(self):
         self.pins = {
