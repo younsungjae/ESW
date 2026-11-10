@@ -12,6 +12,10 @@ PLAYER_HIT_R = 3   # 판정 반지름, 판정은 그림보다 작게 함
 PLAYER_HP = 3
 INVINCIBLE_TIME = 90   # 맞은 뒤 무적 1.5초
 
+DASH_SPEED = 4.5       # 대시 중 한 번에 이동하는 거리
+DASH_TIME = 10         # 대시 지속 (약 0.17초, 이동 거리 약 45)
+DASH_COOLDOWN = 180    # 다시 쓰려면 3초
+
 ARROW_SPEED = 1.5        # 처음 속도
 ARROW_LEN = 8
 ARROW_HIT_R = 2
@@ -24,6 +28,8 @@ COLOR_PLAYER = (255, 230, 240)
 COLOR_HITBOX = (255, 60, 90)
 COLOR_ARROW = (255, 220, 120)
 COLOR_HP = (255, 80, 100)
+COLOR_DASH = (120, 220, 255)
+COLOR_GRAY = (90, 100, 95)
 COLOR_TEXT = (200, 255, 200)
 
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"

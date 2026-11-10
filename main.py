@@ -62,7 +62,7 @@ while True:
         elif state == "play":
             player.update(btns)
             arrows.update(player)
-            if player.invincible == 0 and arrows.check_hit(player):
+            if player.can_be_hit() and arrows.check_hit(player):
                 player.hit()
             play_steps = play_steps + 1
             if player.hp <= 0:
@@ -88,6 +88,7 @@ while True:
         player.draw(d)
         arrows.draw(d)
         player.draw_hp(d)
+        player.draw_dash(d)
         d.text((4, 4), "TIME " + survive, font=small_font, fill=COLOR_TEXT)
 
     elif state == "over":
