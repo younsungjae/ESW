@@ -1,6 +1,7 @@
 from config import (W, H, PLAYER_SPEED, PLAYER_DRAW_R, PLAYER_HIT_R, PLAYER_HP,
                     INVINCIBLE_TIME, DASH_SPEED, DASH_TIME, DASH_COOLDOWN,
-                    COLOR_PLAYER, COLOR_HITBOX, COLOR_HP, COLOR_DASH, COLOR_GRAY)
+                    GAUGE_PER_GRAZE, GAUGE_MAX, SWORD_MAX, SWORD_RADIUS, SWORD_EFFECT_TIME,
+                    COLOR_PLAYER, COLOR_HITBOX, COLOR_HP, COLOR_DASH, COLOR_GRAY, COLOR_SWORD)
 
 
 class Player:
@@ -17,11 +18,20 @@ class Player:
         self.dash_x = 0
         self.dash_y = 0
 
+        self.gauge = 0         # 검기 게이지 (0 ~ 100)
+        self.swords = 0        # 모아둔 검기 개수
+        self.graze_flash = 0   # 스쳤을 때 잠깐 표시
+        self.sword_effect = 0  # 검기 이펙트 남은 시간
+
     def update(self, btns):
         if self.invincible > 0:
             self.invincible = self.invincible - 1
         if self.dash_cool > 0:
             self.dash_cool = self.dash_cool - 1
+        if self.graze_flash > 0:
+            self.graze_flash = self.graze_flash - 1
+        if self.sword_effect > 0:
+            self.sword_effect = self.sword_effect - 1
 
         dx = 0
         dy = 0
@@ -82,7 +92,33 @@ class Player:
         self.hp = self.hp - 1
         self.invincible = INVINCIBLE_TIME
 
+    def add_graze(self, count):
+        if count == 0:
+            return
+        self.graze_flash = 4
+        if self.swords == SWORD_MAX:
+            return
+        self.gauge = self.gauge + count * GAUGE_PER_GRAZE
+        if self.gauge >= GAUGE_MAX:
+            self.gauge = self.gauge - GAUGE_MAX
+            self.swords = self.swords + 1
+            if self.swords == SWORD_MAX:
+                self.gauge = 0
+
+    def use_sword(self):
+        if self.swords == 0:
+            return False
+        self.swords = self.swords - 1
+        self.sword_effect = SWORD_EFFECT_TIME
+        return True
+
     def draw(self, d):
+        # 검기 이펙트: 원이 점점 커짐
+        if self.sword_effect > 0:
+            done = 1 - self.sword_effect / SWORD_EFFECT_TIME
+            rr = 10 + (SWORD_RADIUS - 10) * done
+            d.ellipse((self.x - rr, self.y - rr, self.x + rr, self.y + rr), outline=COLOR_SWORD, width=3)
+
         # 무적일 때 깜빡이기
         if self.invincible > 0 and (self.invincible // 6) % 2 == 1:
             return
@@ -97,6 +133,10 @@ class Player:
         h = PLAYER_HIT_R
         d.ellipse((x - r, y - r, x + r, y + r), fill=color)
         d.ellipse((x - h, y - h, x + h, y + h), fill=COLOR_HITBOX)
+
+        # 스쳤을 때 테두리 반짝
+        if self.graze_flash > 0:
+            d.ellipse((x - r - 3, y - r - 3, x + r + 3, y + r + 3), outline=COLOR_SWORD)
 
     def draw_hp(self, d):
         for i in range(PLAYER_HP):
@@ -119,3 +159,20 @@ class Player:
             ready = 1 - self.dash_cool / DASH_COOLDOWN
             d.rectangle((left, top, right, bottom), outline=COLOR_GRAY)
             d.rectangle((left, top, left + (right - left) * ready, bottom), fill=COLOR_GRAY)
+
+    def draw_sword(self, d):
+        # 대시 막대 아래에 검기 개수와 게이지
+        for i in range(SWORD_MAX):
+            x = W - 42 + i * 14
+            y = 32
+            points = [(x, y - 5), (x + 4, y), (x, y + 5), (x - 4, y)]
+            if i < self.swords:
+                d.polygon(points, fill=COLOR_SWORD)
+            else:
+                d.polygon(points, outline=COLOR_GRAY)
+
+        left = W - 47
+        right = W - 9
+        d.rectangle((left, 40, right, 42), outline=COLOR_GRAY)
+        if self.gauge > 0:
+            d.rectangle((left, 40, left + (right - left) * self.gauge / GAUGE_MAX, 42), fill=COLOR_SWORD)

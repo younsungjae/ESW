@@ -1,7 +1,7 @@
 import math
 import random
 from config import (W, H, ARROW_SPEED, ARROW_LEN, ARROW_HIT_R, ARROW_START_GAP, ARROW_MIN_GAP,
-                    MAX_ARROWS, PLAYER_HIT_R, COLOR_ARROW)
+                    MAX_ARROWS, PLAYER_HIT_R, GRAZE_DIST, COLOR_ARROW)
 
 
 class Arrow:
@@ -12,6 +12,7 @@ class Arrow:
         self.dir_x = math.cos(angle)
         self.dir_y = math.sin(angle)
         self.speed = speed
+        self.grazed = False   # 이미 스친 화살은 다시 안 셈
 
     def update(self):
         self.x = self.x + self.dir_x * self.speed
@@ -86,6 +87,28 @@ class ArrowManager:
                 self.arrows.remove(a)
                 return True
         return False
+
+    def check_graze(self, player):
+        count = 0
+        for a in self.arrows:
+            if not a.grazed:
+                dx = a.x - player.x
+                dy = a.y - player.y
+                dist = math.sqrt(dx * dx + dy * dy)
+                if dist < GRAZE_DIST:
+                    a.grazed = True
+                    count = count + 1
+        return count
+
+    def clear_near(self, x, y, radius):
+        alive = []
+        for a in self.arrows:
+            dx = a.x - x
+            dy = a.y - y
+            dist = math.sqrt(dx * dx + dy * dy)
+            if dist > radius:
+                alive.append(a)
+        self.arrows = alive
 
     def draw(self, d):
         for a in self.arrows:

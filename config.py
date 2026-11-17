@@ -16,6 +16,13 @@ DASH_SPEED = 4.5       # 대시 중 한 번에 이동하는 거리
 DASH_TIME = 10         # 대시 지속 (약 0.17초, 이동 거리 약 45)
 DASH_COOLDOWN = 180    # 다시 쓰려면 3초
 
+GRAZE_DIST = 16        # 중심 거리가 이보다 가까우면 스침 (맞는 거리는 5)
+GAUGE_PER_GRAZE = 10   # 한 번 스칠 때 게이지
+GAUGE_MAX = 100        # 게이지가 다 차면 검기 1개
+SWORD_MAX = 3
+SWORD_RADIUS = 70      # 검기로 지우는 범위
+SWORD_EFFECT_TIME = 15
+
 ARROW_SPEED = 1.5        # 처음 속도
 ARROW_LEN = 8
 ARROW_HIT_R = 2
@@ -30,6 +37,7 @@ COLOR_ARROW = (255, 220, 120)
 COLOR_HP = (255, 80, 100)
 COLOR_DASH = (120, 220, 255)
 COLOR_GRAY = (90, 100, 95)
+COLOR_SWORD = (200, 160, 255)
 COLOR_TEXT = (200, 255, 200)
 
 FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"

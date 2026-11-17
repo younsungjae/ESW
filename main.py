@@ -1,6 +1,6 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
-from config import W, H, STEP, FPS, COLOR_BG, COLOR_TEXT, FONT_PATH
+from config import W, H, STEP, FPS, SWORD_RADIUS, COLOR_BG, COLOR_TEXT, FONT_PATH
 from hw import Display, Buttons
 from player import Player
 from arrows import ArrowManager
@@ -62,8 +62,13 @@ while True:
         elif state == "play":
             player.update(btns)
             arrows.update(player)
-            if player.can_be_hit() and arrows.check_hit(player):
-                player.hit()
+            if player.can_be_hit():
+                if arrows.check_hit(player):
+                    player.hit()
+                else:
+                    player.add_graze(arrows.check_graze(player))
+            if btns.pressed("B") and player.use_sword():
+                arrows.clear_near(player.x, player.y, SWORD_RADIUS)
             play_steps = play_steps + 1
             if player.hp <= 0:
                 state = "over"
@@ -89,6 +94,7 @@ while True:
         arrows.draw(d)
         player.draw_hp(d)
         player.draw_dash(d)
+        player.draw_sword(d)
         d.text((4, 4), "TIME " + survive, font=small_font, fill=COLOR_TEXT)
 
     elif state == "over":
