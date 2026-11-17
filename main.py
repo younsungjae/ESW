@@ -4,11 +4,13 @@ from config import W, H, STEP, FPS, SWORD_RADIUS, COLOR_BG, COLOR_TEXT, FONT_PAT
 from hw import Display, Buttons
 from player import Player
 from arrows import ArrowManager
+from stage import Stage
 
 screen = Display()
 btns = Buttons()
 player = Player()
 arrows = ArrowManager()
+stage = Stage()
 
 img = Image.new("RGB", (W, H))
 d = ImageDraw.Draw(img)
@@ -32,7 +34,7 @@ def any_pressed():
     return False
 
 
-state = "title"   # title / play / over
+state = "title"   # title / play / pause / over / clear
 play_steps = 0
 over_wait = 0
 
@@ -56,12 +58,14 @@ while True:
             if any_pressed():
                 player = Player()
                 arrows = ArrowManager()
+                stage = Stage()
                 play_steps = 0
                 state = "play"
 
         elif state == "play":
+            stage.update()
             player.update(btns)
-            arrows.update(player)
+            arrows.update(player, stage.arrow_gap(), stage.arrow_speed())
             if player.can_be_hit():
                 if arrows.check_hit(player):
                     player.hit()
@@ -73,8 +77,17 @@ while True:
             if player.hp <= 0:
                 state = "over"
                 over_wait = 60   # 바로 넘어가지 않게 1초 기다림
+            elif stage.finished:
+                state = "clear"
+                over_wait = 60
+            elif btns.pressed("C"):
+                state = "pause"
 
-        elif state == "over":
+        elif state == "pause":
+            if btns.pressed("C"):
+                state = "play"
+
+        elif state == "over" or state == "clear":
             if over_wait > 0:
                 over_wait = over_wait - 1
             elif any_pressed():
@@ -82,26 +95,39 @@ while True:
 
         next_update = next_update + STEP
 
-    d.rectangle((0, 0, W, H), fill=COLOR_BG)
     survive = str(round(play_steps / 60, 1))
 
     if state == "title":
+        d.rectangle((0, 0, W, H), fill=COLOR_BG)
         center_text("MURIM GIRL", 80, big_font)
         center_text("PRESS ANY BUTTON", 140, small_font)
 
-    elif state == "play":
+    elif state == "play" or state == "pause":
+        d.rectangle((0, 0, W, H), fill=stage.bg_color())
         player.draw(d)
         arrows.draw(d)
         player.draw_hp(d)
         player.draw_dash(d)
         player.draw_sword(d)
-        d.text((4, 4), "TIME " + survive, font=small_font, fill=COLOR_TEXT)
+        d.text((4, 4), stage.name(), font=small_font, fill=COLOR_TEXT)
+        d.text((4, 20), "TIME " + survive, font=small_font, fill=COLOR_TEXT)
+        if stage.banner > 0:
+            center_text(stage.banner_text(), 90, big_font)
+        if state == "pause":
+            d.rectangle((50, 95, 190, 150), fill=(0, 0, 0), outline=COLOR_TEXT)
+            center_text("PAUSE", 100, big_font)
+            center_text("PRESS CENTER", 130, small_font)
 
-    elif state == "over":
-        center_text("GAME OVER", 80, big_font)
-        center_text("TIME " + survive + "s", 120, small_font)
+    elif state == "over" or state == "clear":
+        d.rectangle((0, 0, W, H), fill=stage.bg_color())
+        if state == "over":
+            center_text("GAME OVER", 70, big_font)
+        else:
+            center_text("CLEAR!", 70, big_font)
+        center_text(stage.name(), 110, small_font)
+        center_text("TIME " + survive + "s", 130, small_font)
         if over_wait == 0:
-            center_text("PRESS ANY BUTTON", 160, small_font)
+            center_text("PRESS ANY BUTTON", 170, small_font)
 
     frame_count = frame_count + 1
     if now - fps_timer >= 1:

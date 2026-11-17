@@ -1,7 +1,6 @@
 import math
 import random
-from config import (W, H, ARROW_SPEED, ARROW_LEN, ARROW_HIT_R, ARROW_START_GAP, ARROW_MIN_GAP,
-                    MAX_ARROWS, PLAYER_HIT_R, GRAZE_DIST, COLOR_ARROW)
+from config import (W, H, ARROW_LEN, ARROW_HIT_R, MAX_ARROWS, PLAYER_HIT_R, GRAZE_DIST, COLOR_ARROW)
 
 
 class Arrow:
@@ -47,27 +46,20 @@ class ArrowManager:
     def __init__(self):
         self.arrows = []
         self.timer = 0
-        self.time = 0
 
-    def spawn(self, player):
+    def spawn(self, player, speed):
         x, y = random_edge()
         # 플레이어 근처를 노리게 (정확히 노리면 너무 어려움)
         target_x = player.x + random.randint(-30, 30)
         target_y = player.y + random.randint(-30, 30)
-        speed = ARROW_SPEED + (self.time // 600) * 0.1   # 10초마다 조금씩 빨라짐
         self.arrows.append(Arrow(x, y, target_x, target_y, speed))
 
-    def update(self, player):
-        self.time = self.time + 1
+    def update(self, player, gap, speed):
+        # gap: 몇 번 계산마다 한 발 쏠지, speed: 화살 속도 (시간대마다 다름)
         self.timer = self.timer + 1
-
-        gap = ARROW_START_GAP - (self.time // 300) * 2   # 5초마다 간격이 줄어듦
-        if gap < ARROW_MIN_GAP:
-            gap = ARROW_MIN_GAP
-
         if self.timer >= gap and len(self.arrows) < MAX_ARROWS:
             self.timer = 0
-            self.spawn(player)
+            self.spawn(player, speed)
 
         for a in self.arrows:
             a.update()

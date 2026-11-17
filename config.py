@@ -23,14 +23,23 @@ SWORD_MAX = 3
 SWORD_RADIUS = 70      # 검기로 지우는 범위
 SWORD_EFFECT_TIME = 15
 
-ARROW_SPEED = 1.5        # 처음 속도
+# 하루 흐름 (초)
+DAY_TIME = 25
+DUSK_TIME = 35
+NIGHT_TIME = 20        # 보스 넣기 전까지 임시로 밤도 시간으로 넘어감
+LAST_DAY = 3
+
+# 시간대별 화살: 몇 번 계산마다 한 발 / 속도 (날이 지날수록 더 어려워짐)
+ARROW_GAPS = {"morning": 36, "dusk": 24, "night": 18}
+ARROW_SPEEDS = {"morning": 1.5, "dusk": 1.9, "night": 2.2}
+
 ARROW_LEN = 8
 ARROW_HIT_R = 2
-ARROW_START_GAP = 40     # 처음엔 40번 계산마다 한 발 (약 0.67초)
 ARROW_MIN_GAP = 6        # 가장 빠를 때 6번마다 한 발 (0.1초)
 MAX_ARROWS = 60
 
 COLOR_BG = (12, 28, 18)
+BG_COLORS = {"morning": (38, 72, 44), "dusk": (78, 44, 32), "night": (12, 16, 34)}
 COLOR_PLAYER = (255, 230, 240)
 COLOR_HITBOX = (255, 60, 90)
 COLOR_ARROW = (255, 220, 120)
