@@ -33,6 +33,16 @@ LAST_DAY = 3
 ARROW_GAPS = {"morning": 36, "dusk": 24, "night": 18}
 ARROW_SPEEDS = {"morning": 1.5, "dusk": 1.9, "night": 2.2}
 
+# 시간대별 패턴이 나올 비율 (숫자가 클수록 자주)
+PATTERNS = {
+    "morning": {"single": 7, "volley": 3},
+    "dusk": {"single": 4, "volley": 2, "fan": 4},
+    "night": {"single": 2, "volley": 2, "fan": 3, "burst": 3},
+}
+VOLLEY_GAP = 28        # 일제사격 화살 사이 간격 (픽셀)
+FAN_ANGLE = 15         # 부채꼴 화살 사이 각도
+BURST_GAP = 10         # 조준 연사 발사 간격
+
 ARROW_LEN = 8
 ARROW_HIT_R = 2
 ARROW_MIN_GAP = 6        # 가장 빠를 때 6번마다 한 발 (0.1초)

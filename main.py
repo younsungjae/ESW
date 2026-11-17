@@ -65,7 +65,7 @@ while True:
         elif state == "play":
             stage.update()
             player.update(btns)
-            arrows.update(player, stage.arrow_gap(), stage.arrow_speed())
+            arrows.update(player, stage)
             if player.can_be_hit():
                 if arrows.check_hit(player):
                     player.hit()
