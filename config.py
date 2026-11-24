@@ -22,7 +22,7 @@ GRAZE_DIST = 16        # 중심 거리가 이보다 가까우면 스침 (맞는 
 GAUGE_PER_GRAZE = 10   # 한 번 스칠 때 게이지
 GAUGE_MAX = 100        # 게이지가 다 차면 검기 1개
 SWORD_MAX = 3
-SWORD_RADIUS = 70      # 검기로 지우는 범위
+SWORD_RADIUS = 110     # 검기로 지우는 범위
 SWORD_EFFECT_TIME = 15
 
 # 하루 흐름 (초)
