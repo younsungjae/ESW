@@ -84,7 +84,7 @@ class ArrowManager:
         for a in FAN_ANGLES:
             self.add(x, y, center + a, speed)
 
-    def update(self, player, stage):
+    def shoot_edge(self, player, stage):
         gap = stage.arrow_gap()
         speed = stage.arrow_speed()
 
@@ -101,6 +101,10 @@ class ArrowManager:
                 self.shoot_fan(player, speed)
                 self.timer = -gap * 3
 
+    def update(self, player, stage):
+        if stage.shooting():
+            self.shoot_edge(player, stage)
+
         for a in self.arrows:
             a.update()
 
@@ -109,6 +113,9 @@ class ArrowManager:
             if not a.is_out():
                 alive.append(a)
         self.arrows = alive
+
+    def clear_all(self):
+        self.arrows = []
 
     def check_hit(self, player):
         for a in self.arrows:

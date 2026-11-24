@@ -26,12 +26,17 @@ SWORD_EFFECT_TIME = 15
 # 하루 흐름 (초)
 DAY_TIME = 25
 DUSK_TIME = 35
-NIGHT_TIME = 20        # 보스 넣기 전까지 임시로 밤도 시간으로 넘어감
+REST_TIME = 3          # 보스 잡고 다음 날까지 쉬는 시간
 LAST_DAY = 3
 
-# 시간대별 화살: 몇 번 계산마다 한 발 / 속도 (날이 지날수록 더 어려워짐)
-ARROW_GAPS = {"morning": 36, "dusk": 24, "night": 18}
-ARROW_SPEEDS = {"morning": 1.5, "dusk": 1.9, "night": 2.2}
+# 시간대별 화살: 몇 번 계산마다 한 발 / 속도 (날이 지날수록 더 어려워짐, 밤에는 보스만 쏨)
+ARROW_GAPS = {"morning": 36, "dusk": 24}
+ARROW_SPEEDS = {"morning": 1.5, "dusk": 1.9}
+
+# 보스
+BOSS_R = 12
+BOSS_ARROW_SPEED = 1.6
+BOSS_GAUGE = 5         # 보스전에서는 0.5초마다 게이지가 저절로 참
 
 # 패턴 모양
 VOLLEY_OFFSETS = [-56, -28, 0, 28, 56]   # 일제사격: 플레이어 기준으로 화살을 놓을 위치
@@ -43,7 +48,7 @@ ARROW_MIN_GAP = 6        # 가장 빠를 때 6번마다 한 발 (0.1초)
 MAX_ARROWS = 60
 
 COLOR_BG = (12, 28, 18)
-BG_COLORS = {"morning": (38, 72, 44), "dusk": (78, 44, 32), "night": (12, 16, 34)}
+BG_COLORS = {"morning": (38, 72, 44), "dusk": (78, 44, 32), "night": (12, 16, 34), "rest": (40, 46, 70)}
 COLOR_PLAYER = (255, 230, 240)
 COLOR_HITBOX = (255, 60, 90)
 COLOR_ARROW = (255, 220, 120)

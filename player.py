@@ -96,9 +96,12 @@ class Player:
         if count == 0:
             return
         self.graze_flash = 4
+        self.add_gauge(count * GAUGE_PER_GRAZE)
+
+    def add_gauge(self, amount):
         if self.swords == SWORD_MAX:
             return
-        self.gauge = self.gauge + count * GAUGE_PER_GRAZE
+        self.gauge = self.gauge + amount
         if self.gauge >= GAUGE_MAX:
             self.gauge = self.gauge - GAUGE_MAX
             self.swords = self.swords + 1

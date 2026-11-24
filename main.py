@@ -1,16 +1,18 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
-from config import W, H, STEP, FPS, SWORD_RADIUS, COLOR_BG, COLOR_TEXT, FONT_PATH
+from config import W, H, STEP, FPS, SWORD_RADIUS, BOSS_GAUGE, COLOR_BG, COLOR_TEXT, FONT_PATH
 from hw import Display, Buttons
 from player import Player
 from arrows import ArrowManager
 from stage import Stage
+from boss import Boss
 
 screen = Display()
 btns = Buttons()
 player = Player()
 arrows = ArrowManager()
 stage = Stage()
+boss = None
 
 img = Image.new("RGB", (W, H))
 d = ImageDraw.Draw(img)
@@ -59,6 +61,7 @@ while True:
                 player = Player()
                 arrows = ArrowManager()
                 stage = Stage()
+                boss = None
                 play_steps = 0
                 state = "play"
 
@@ -66,6 +69,15 @@ while True:
             stage.update()
             player.update(btns)
             arrows.update(player, stage)
+
+            # 밤이 되면 보스 등장
+            if stage.phase == "night" and boss is None:
+                boss = Boss(stage.day)
+            if boss is not None:
+                boss.update(arrows)
+                if play_steps % 30 == 0:
+                    player.add_gauge(BOSS_GAUGE)
+
             if player.can_be_hit():
                 if arrows.check_hit(player):
                     player.hit()
@@ -73,6 +85,14 @@ while True:
                     player.add_graze(arrows.check_graze(player))
             if btns.pressed("B") and player.use_sword():
                 arrows.clear_near(player.x, player.y, SWORD_RADIUS)
+                if boss is not None and boss.in_range(player):
+                    boss.hit()
+
+            # 보스를 잡으면 화살 다 없애고 다음 날로
+            if boss is not None and boss.is_dead():
+                boss = None
+                arrows.clear_all()
+                stage.boss_defeated()
             play_steps = play_steps + 1
             if player.hp <= 0:
                 state = "over"
@@ -104,8 +124,12 @@ while True:
 
     elif state == "play" or state == "pause":
         d.rectangle((0, 0, W, H), fill=stage.bg_color())
+        if boss is not None:
+            boss.draw(d)
         player.draw(d)
         arrows.draw(d)
+        if boss is not None:
+            boss.draw_hp(d, small_font)
         player.draw_hp(d)
         player.draw_dash(d)
         player.draw_sword(d)

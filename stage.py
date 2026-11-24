@@ -1,12 +1,12 @@
 import random
-from config import (LOGIC_HZ, DAY_TIME, DUSK_TIME, NIGHT_TIME, LAST_DAY,
+from config import (LOGIC_HZ, DAY_TIME, DUSK_TIME, REST_TIME, LAST_DAY,
                     ARROW_GAPS, ARROW_SPEEDS, ARROW_MIN_GAP, BG_COLORS)
 
 
 class Stage:
     def __init__(self):
         self.day = 1
-        self.phase = "morning"   # morning / dusk / night
+        self.phase = "morning"   # morning / dusk / night / rest
         self.timer = 0           # 지금 시간대가 시작되고 지난 계산 횟수
         self.banner = 120        # 시간대가 바뀔 때 큰 글씨 2초 표시
         self.finished = False
@@ -20,13 +20,16 @@ class Stage:
             self.change("dusk")
         elif self.phase == "dusk" and self.timer >= DUSK_TIME * LOGIC_HZ:
             self.change("night")
-        elif self.phase == "night" and self.timer >= NIGHT_TIME * LOGIC_HZ:
-            # 임시: 보스 넣으면 보스를 잡았을 때 넘어가게 바꿀 것
-            if self.day == LAST_DAY:
-                self.finished = True
-            else:
-                self.day = self.day + 1
-                self.change("morning")
+        elif self.phase == "rest" and self.timer >= REST_TIME * LOGIC_HZ:
+            self.day = self.day + 1
+            self.change("morning")
+        # 밤은 시간으로 안 끝나고, 보스를 잡으면 boss_defeated()로 넘어감
+
+    def boss_defeated(self):
+        if self.day == LAST_DAY:
+            self.finished = True
+        else:
+            self.change("rest")
 
     def change(self, phase):
         self.phase = phase
@@ -49,13 +52,7 @@ class Stage:
             if n <= 7:
                 return "single"
             return "volley"
-        if self.phase == "dusk":
-            if n <= 4:
-                return "single"
-            if n <= 6:
-                return "volley"
-            return "fan"
-        if n <= 3:
+        if n <= 4:
             return "single"
         if n <= 6:
             return "volley"
@@ -68,9 +65,21 @@ class Stage:
         return (int(r * dark), int(g * dark), int(b * dark))
 
     def name(self):
+        if self.phase == "rest":
+            return "DAY " + str(self.day) + " CLEAR"
         return "DAY " + str(self.day) + " " + self.phase.upper()
 
     def banner_text(self):
         if self.phase == "morning":
             return "DAY " + str(self.day)
-        return self.phase.upper()
+        if self.phase == "night":
+            return "WARNING"
+        if self.phase == "rest":
+            return "DAY " + str(self.day) + " CLEAR!"
+        return "DUSK"
+
+    def shooting(self):
+        # 가장자리 화살은 낮과 해질녘에만
+        if self.phase == "morning" or self.phase == "dusk":
+            return True
+        return False
