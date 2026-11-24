@@ -1,6 +1,6 @@
 import random
 from config import (LOGIC_HZ, DAY_TIME, DUSK_TIME, NIGHT_TIME, LAST_DAY,
-                    ARROW_GAPS, ARROW_SPEEDS, ARROW_MIN_GAP, PATTERNS, BG_COLORS)
+                    ARROW_GAPS, ARROW_SPEEDS, ARROW_MIN_GAP, BG_COLORS)
 
 
 class Stage:
@@ -43,14 +43,23 @@ class Stage:
         return ARROW_SPEEDS[self.phase] + (self.day - 1) * 0.2
 
     def pick_pattern(self):
-        table = PATTERNS[self.phase]
-        names = list(table.keys())
-        weights = list(table.values())
-        return random.choices(names, weights)[0]
-
-    def pattern_count(self):
-        # 패턴 한 번에 쏘는 화살 수: 1일차 3발, 2일차 4발, 3일차 5발
-        return 2 + self.day
+        # 1~10 중 하나를 뽑아서 시간대마다 다른 비율로 패턴 고르기
+        n = random.randint(1, 10)
+        if self.phase == "morning":
+            if n <= 7:
+                return "single"
+            return "volley"
+        if self.phase == "dusk":
+            if n <= 4:
+                return "single"
+            if n <= 6:
+                return "volley"
+            return "fan"
+        if n <= 3:
+            return "single"
+        if n <= 6:
+            return "volley"
+        return "fan"
 
     def bg_color(self):
         # 날이 지날수록 숲이 어두워짐
