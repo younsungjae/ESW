@@ -113,7 +113,6 @@ class Player:
         if self.swords == 0:
             return False
         self.swords = self.swords - 1
-        self.sword_effect = SWORD_EFFECT_TIME
         return True
 
     def draw(self, img, d):

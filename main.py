@@ -1,6 +1,6 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
-from config import W, H, STEP, FPS, SWORD_RADIUS, CUTIN_TIME, BOSS_GAUGE, COLOR_BG, COLOR_TEXT, FONT_PATH
+from config import W, H, STEP, FPS, SWORD_RADIUS, SWORD_EFFECT_TIME, CUTIN_TIME, BOSS_GAUGE, COLOR_BG, COLOR_TEXT, FONT_PATH
 from hw import Display, Buttons
 from player import Player
 from arrows import ArrowManager
@@ -126,6 +126,7 @@ while True:
         elif state == "cutin":
             cutin = cutin - 1
             if cutin == 0:
+                player.sword_effect = SWORD_EFFECT_TIME
                 state = "play"
 
         elif state == "ending":
