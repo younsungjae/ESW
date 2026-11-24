@@ -19,7 +19,7 @@ d = ImageDraw.Draw(img)
 
 try:
     big_font = ImageFont.truetype(FONT_PATH, 24)
-    small_font = ImageFont.truetype(FONT_PATH, 13)
+    small_font = ImageFont.truetype(FONT_PATH, 12)
 except OSError:
     big_font = ImageFont.load_default()
     small_font = ImageFont.load_default()
@@ -119,39 +119,39 @@ while True:
 
     if state == "title":
         d.rectangle((0, 0, W, H), fill=COLOR_BG)
-        center_text("MURIM GIRL", 80, big_font)
-        center_text("PRESS ANY BUTTON", 140, small_font)
+        center_text("무림소녀", 80, big_font)
+        center_text("아무 버튼이나 누르세요", 140, small_font)
 
     elif state == "play" or state == "pause":
         d.rectangle((0, 0, W, H), fill=stage.bg_color())
         if boss is not None:
-            boss.draw(d)
-        player.draw(d)
+            boss.draw(img)
+        player.draw(img, d)
         arrows.draw(d)
         if boss is not None:
             boss.draw_hp(d, small_font)
-        player.draw_hp(d)
+        player.draw_hp(img)
         player.draw_dash(d)
-        player.draw_sword(d)
+        player.draw_sword(img, d)
         d.text((4, 4), stage.name(), font=small_font, fill=COLOR_TEXT)
-        d.text((4, 20), "TIME " + survive, font=small_font, fill=COLOR_TEXT)
+        d.text((4, 20), "시간 " + survive, font=small_font, fill=COLOR_TEXT)
         if stage.banner > 0:
             center_text(stage.banner_text(), 90, big_font)
         if state == "pause":
             d.rectangle((50, 95, 190, 150), fill=(0, 0, 0), outline=COLOR_TEXT)
-            center_text("PAUSE", 100, big_font)
-            center_text("PRESS CENTER", 130, small_font)
+            center_text("일시정지", 100, big_font)
+            center_text("가운데 버튼으로 계속", 130, small_font)
 
     elif state == "over" or state == "clear":
         d.rectangle((0, 0, W, H), fill=stage.bg_color())
         if state == "over":
-            center_text("GAME OVER", 70, big_font)
+            center_text("게임 오버", 70, big_font)
         else:
-            center_text("CLEAR!", 70, big_font)
+            center_text("클리어!", 70, big_font)
         center_text(stage.name(), 110, small_font)
-        center_text("TIME " + survive + "s", 130, small_font)
+        center_text("버틴 시간 " + survive + "초", 130, small_font)
         if over_wait == 0:
-            center_text("PRESS ANY BUTTON", 170, small_font)
+            center_text("아무 버튼이나 누르세요", 170, small_font)
 
     frame_count = frame_count + 1
     if now - fps_timer >= 1:

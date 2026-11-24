@@ -1,3 +1,5 @@
+import os
+
 # 화면 가로세로
 W = 240 
 H = 240
@@ -58,4 +60,5 @@ COLOR_GRAY = (90, 100, 95)
 COLOR_SWORD = (200, 160, 255)
 COLOR_TEXT = (200, 255, 200)
 
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+# 던파 비트비트체 (assets/fonts 폴더에 넣기)
+FONT_PATH = os.path.join(os.path.dirname(__file__), "assets", "fonts", "DNFBitBitv2.ttf")

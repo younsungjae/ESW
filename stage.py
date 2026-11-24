@@ -65,18 +65,22 @@ class Stage:
         return (int(r * dark), int(g * dark), int(b * dark))
 
     def name(self):
-        if self.phase == "rest":
-            return "DAY " + str(self.day) + " CLEAR"
-        return "DAY " + str(self.day) + " " + self.phase.upper()
+        if self.phase == "morning":
+            return str(self.day) + "일차 낮"
+        if self.phase == "dusk":
+            return str(self.day) + "일차 해질녘"
+        if self.phase == "night":
+            return str(self.day) + "일차 밤"
+        return str(self.day) + "일차 클리어"
 
     def banner_text(self):
         if self.phase == "morning":
-            return "DAY " + str(self.day)
+            return str(self.day) + "일차"
+        if self.phase == "dusk":
+            return "해질녘"
         if self.phase == "night":
             return "WARNING"
-        if self.phase == "rest":
-            return "DAY " + str(self.day) + " CLEAR!"
-        return "DUSK"
+        return str(self.day) + "일차 클리어!"
 
     def shooting(self):
         # 가장자리 화살은 낮과 해질녘에만
