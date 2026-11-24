@@ -122,6 +122,7 @@ class Player:
             done = 1 - self.sword_effect / SWORD_EFFECT_TIME
             rr = 10 + (SWORD_RADIUS - 10) * done
             d.ellipse((self.x - rr, self.y - rr, self.x + rr, self.y + rr), outline=COLOR_SWORD, width=3)
+            images.draw(img, images.SLASH, self.x, self.y)
 
         # 무적일 때 깜빡이기
         if self.invincible > 0 and (self.invincible // 6) % 2 == 1:

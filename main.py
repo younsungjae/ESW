@@ -6,6 +6,8 @@ from player import Player
 from arrows import ArrowManager
 from stage import Stage
 from boss import Boss
+from ending import Ending
+import record
 
 screen = Display()
 btns = Buttons()
@@ -36,9 +38,12 @@ def any_pressed():
     return False
 
 
-state = "title"   # title / play / pause / over / clear
+state = "title"   # title / play / pause / ending / over / clear
 play_steps = 0
 over_wait = 0
+ending = None
+rec = record.load()
+new_record = False
 
 next_update = time.monotonic()
 fps = 0
@@ -97,15 +102,31 @@ while True:
             if player.hp <= 0:
                 state = "over"
                 over_wait = 60   # 바로 넘어가지 않게 1초 기다림
+                new_record = False
+                if play_steps / 60 > rec["best_time"]:
+                    rec["best_time"] = round(play_steps / 60, 1)
+                    record.save(rec)
+                    new_record = True
             elif stage.finished:
-                state = "clear"
-                over_wait = 60
+                state = "ending"
+                ending = Ending()
             elif btns.pressed("C"):
                 state = "pause"
 
         elif state == "pause":
             if btns.pressed("C"):
                 state = "play"
+
+        elif state == "ending":
+            ending.update(btns)
+            if ending.done:
+                state = "clear"
+                over_wait = 60
+                new_record = False
+                if rec["clear_time"] == 0 or play_steps / 60 < rec["clear_time"]:
+                    rec["clear_time"] = round(play_steps / 60, 1)
+                    record.save(rec)
+                    new_record = True
 
         elif state == "over" or state == "clear":
             if over_wait > 0:
@@ -142,16 +163,30 @@ while True:
             center_text("일시정지", 100, big_font)
             center_text("가운데 버튼으로 계속", 130, small_font)
 
-    elif state == "over" or state == "clear":
+    elif state == "ending":
+        ending.draw(img, d, small_font)
+
+    elif state == "over":
         d.rectangle((0, 0, W, H), fill=stage.bg_color())
-        if state == "over":
-            center_text("게임 오버", 70, big_font)
-        else:
-            center_text("클리어!", 70, big_font)
-        center_text(stage.name(), 110, small_font)
-        center_text("버틴 시간 " + survive + "초", 130, small_font)
+        center_text("게임 오버", 60, big_font)
+        center_text(stage.name(), 100, small_font)
+        center_text("버틴 시간 " + survive + "초", 120, small_font)
+        center_text("최고 기록 " + str(rec["best_time"]) + "초", 140, small_font)
+        if new_record:
+            center_text("NEW RECORD!", 160, small_font)
         if over_wait == 0:
-            center_text("아무 버튼이나 누르세요", 170, small_font)
+            center_text("아무 버튼이나 누르세요", 190, small_font)
+
+    elif state == "clear":
+        d.rectangle((0, 0, W, H), fill=COLOR_BG)
+        center_text("클리어!", 60, big_font)
+        center_text("남은 체력 " + str(player.hp), 100, small_font)
+        center_text("클리어 시간 " + survive + "초", 120, small_font)
+        center_text("최단 기록 " + str(rec["clear_time"]) + "초", 140, small_font)
+        if new_record:
+            center_text("NEW RECORD!", 160, small_font)
+        if over_wait == 0:
+            center_text("아무 버튼이나 누르세요", 190, small_font)
 
     frame_count = frame_count + 1
     if now - fps_timer >= 1:
