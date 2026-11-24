@@ -26,8 +26,8 @@ SWORD_RADIUS = 110     # 검기로 지우는 범위
 SWORD_EFFECT_TIME = 15
 
 # 하루 흐름 (초)
-DAY_TIME = 25
-DUSK_TIME = 35
+DAY_TIME = 15
+DUSK_TIME = 25
 REST_TIME = 3          # 보스 잡고 다음 날까지 쉬는 시간
 LAST_DAY = 3
 
