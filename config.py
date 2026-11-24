@@ -60,5 +60,5 @@ COLOR_GRAY = (90, 100, 95)
 COLOR_SWORD = (200, 160, 255)
 COLOR_TEXT = (200, 255, 200)
 
-# 던파 비트비트체 (assets/fonts 폴더에 넣기)
-FONT_PATH = os.path.join(os.path.dirname(__file__), "assets", "fonts", "DNFBitBitv2.ttf")
+# 갈무리11 Bold (OFL 1.1, assets/fonts/OFL.md)
+FONT_PATH = os.path.join(os.path.dirname(__file__), "assets", "fonts", "Galmuri11-Bold.ttf")
