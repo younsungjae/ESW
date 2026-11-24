@@ -1,6 +1,6 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
-from config import W, H, STEP, FPS, SWORD_RADIUS, BOSS_GAUGE, COLOR_BG, COLOR_TEXT, FONT_PATH
+from config import W, H, STEP, FPS, SWORD_RADIUS, CUTIN_TIME, BOSS_GAUGE, COLOR_BG, COLOR_TEXT, FONT_PATH
 from hw import Display, Buttons
 from player import Player
 from arrows import ArrowManager
@@ -8,6 +8,7 @@ from stage import Stage
 from boss import Boss
 from ending import Ending
 import record
+import images
 
 screen = Display()
 btns = Buttons()
@@ -44,6 +45,7 @@ over_wait = 0
 ending = None
 rec = record.load()
 new_record = False
+cutin = 0
 
 next_update = time.monotonic()
 fps = 0
@@ -68,6 +70,7 @@ while True:
                 stage = Stage()
                 boss = None
                 play_steps = 0
+                cutin = 0
                 state = "play"
 
         elif state == "play":
@@ -92,6 +95,7 @@ while True:
                 arrows.clear_near(player.x, player.y, SWORD_RADIUS)
                 if boss is not None and boss.in_range(player):
                     boss.hit()
+                cutin = CUTIN_TIME
 
             # 보스를 잡으면 화살 다 없애고 다음 날로
             if boss is not None and boss.is_dead():
@@ -107,6 +111,8 @@ while True:
                     rec["best_time"] = round(play_steps / 60, 1)
                     record.save(rec)
                     new_record = True
+            elif cutin > 0:
+                state = "cutin"
             elif stage.finished:
                 state = "ending"
                 ending = Ending()
@@ -115,6 +121,11 @@ while True:
 
         elif state == "pause":
             if btns.pressed("C"):
+                state = "play"
+
+        elif state == "cutin":
+            cutin = cutin - 1
+            if cutin == 0:
                 state = "play"
 
         elif state == "ending":
@@ -143,7 +154,7 @@ while True:
         center_text("무림소녀", 80, big_font)
         center_text("아무 버튼이나 누르세요", 140, small_font)
 
-    elif state == "play" or state == "pause":
+    elif state == "play" or state == "pause" or state == "cutin":
         d.rectangle((0, 0, W, H), fill=stage.bg_color())
         if boss is not None:
             boss.draw(img)
@@ -162,6 +173,14 @@ while True:
             d.rectangle((50, 95, 190, 150), fill=(0, 0, 0), outline=COLOR_TEXT)
             center_text("일시정지", 100, big_font)
             center_text("가운데 버튼으로 계속", 130, small_font)
+        if state == "cutin":
+            passed = CUTIN_TIME - cutin
+            x = 0
+            if passed < 12:
+                x = W - passed * 20
+            img.paste(images.CUTIN, (x, 80))
+            d.line((x, 79, W, 79), fill=COLOR_TEXT, width=2)
+            d.line((x, 160, W, 160), fill=COLOR_TEXT, width=2)
 
     elif state == "ending":
         ending.draw(img, d, small_font)

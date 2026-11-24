@@ -1,5 +1,6 @@
 import os
 from PIL import Image
+from config import SWORD_RADIUS
 
 # main.py가 있는 폴더 기준으로 assets/images를 찾음 (어디서 실행해도 됨)
 IMAGE_DIR = os.path.join(os.path.dirname(__file__), "assets", "images")
@@ -22,6 +23,7 @@ HEART = load("heart")
 HEART_EMPTY = load("heart_empty")
 SWORD = load("sword")
 SWORD_EMPTY = load("sword_empty")
-SLASH = load("slash")
+SLASH = load("slash").resize((SWORD_RADIUS * 2, SWORD_RADIUS * 2), Image.NEAREST)
+CUTIN = load("cutin")
 ENDING1 = load("ending1")
 ENDING2 = load("ending2")

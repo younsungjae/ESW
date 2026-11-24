@@ -24,6 +24,7 @@ GAUGE_MAX = 100        # 게이지가 다 차면 검기 1개
 SWORD_MAX = 3
 SWORD_RADIUS = 110     # 검기로 지우는 범위
 SWORD_EFFECT_TIME = 15
+CUTIN_TIME = 36
 
 # 하루 흐름 (초)
 DAY_TIME = 15
